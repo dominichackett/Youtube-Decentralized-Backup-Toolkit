@@ -26,29 +26,29 @@ In addition, the Youtube decentralized Backup Toolkit allows users to mint non-f
 Overall, the Youtube decentralized Backup Toolkit is a useful tool for content creators looking to securely store and monetize their work in a decentralized manner.
 
 
-##Screenshots
+## Screenshots
 
-###Home Page
+### Home Page
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/home.png)
 
 
-###Channels
+### Channels
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channels.png)
 
 
-###Channel
+### Channel
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channel.png)
 
 
-###Videos
+### Videos
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/videos.png)
 
 
-###Video
+### Video
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/video.png)
 
 
-###Mint Video NFT
+### Mint Video NFT
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/nft.png)
 
 ![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/opensea.png)
