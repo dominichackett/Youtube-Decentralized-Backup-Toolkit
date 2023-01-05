@@ -1,0 +1,7 @@
+type YoutubeChannelInformation @createModel(accountRelation:LIST, description:  "Youtube Channel Information"){
+  channelId: String! @string(maxLength: 100)
+  title:  String! @string(maxLength: 30)
+  banner: String! @string(maxLength: 300)
+  thumbnails: String! @string(maxLength: 2000)
+  description: String! @string(maxLength: 5000)
+}

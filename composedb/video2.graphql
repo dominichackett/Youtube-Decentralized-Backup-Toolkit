@@ -1,0 +1,14 @@
+
+
+type YoutubeVideoInformation @createModel(accountRelation:LIST, description:  "Youtube Video Information"){
+  channel: String! @string(maxLength: 100) 
+
+  videoId: String! @string(maxLength: 100)
+  title: String! @string(maxLength: 100)
+  thumbnails: String! @string(maxLength: 2000)
+  description: String! @string(maxLength: 5000) 
+  downloaded:   Boolean!
+  ipfsCID: String! @string(maxLength: 59)
+}
+
+
