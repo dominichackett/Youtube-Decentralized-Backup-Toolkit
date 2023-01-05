@@ -25,33 +25,36 @@ In addition, the Youtube decentralized Backup Toolkit allows users to mint non-f
 
 Overall, the Youtube decentralized Backup Toolkit is a useful tool for content creators looking to securely store and monetize their work in a decentralized manner.
 
+## Demo Video
+
+[![IMAGE ALT TEXT HERE](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/about.png)](https://www.youtube.com/watch?v=rra8aJLGEW0)
 
 ## Screenshots
 
 ### Home Page
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/home.png)
+![Home Page](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/home.png)
 
 
 ### Channels
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channels.png)
+![Channels](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channels.png)
 
 
 ### Channel
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channel.png)
+![Channel](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/channel.png)
 
 
 ### Videos
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/videos.png)
+![Videos](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/videos.png)
 
 
 ### Video
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/video.png)
+![Video](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/video.png)
 
 
 ### Mint Video NFT
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/nft.png)
+![Mint NFT](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/nft.png)
 
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/opensea.png)
+![NFT on Opensea](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/blob/main/images/opensea.png)
 
 
 
