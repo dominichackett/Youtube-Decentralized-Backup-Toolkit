@@ -33,25 +33,25 @@ Overall, the Youtube decentralized Backup Toolkit is a useful tool for content c
 
 
 ###Channels
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/channels.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/channels.png)
 
 
 ###Channel
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/channel.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/channel.png)
 
 
 ###Videos
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/videos.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/videos.png)
 
 
 ###Video
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/video.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/video.png)
 
 
 ###Mint Video NFT
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/nft.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/nft.png)
 
-![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/opensea.png)
+![alt text](https://github.com/dominichackett/Youtube-Decentralized-Backup-Toolkit/images/opensea.png)
 
 
 
