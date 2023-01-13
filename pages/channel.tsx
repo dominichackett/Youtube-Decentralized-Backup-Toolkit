@@ -11,14 +11,25 @@ import { authenticateCeramic } from '../utils'
 var ax = require('@w3ui/react-uploader')
 import {useKeyring  } from '@w3ui/react-keyring'
 import axios from 'axios'
+import { WebBundlr } from '@bundlr-network/client';
+import { providers } from 'ethers';
+import fileReaderStream from "filereader-stream";
+import BigNumber from "bignumber.js";
 
 export default function Channel() {
+  const [fundAmount, setFundAmount] = useState(1);
+  const [fundMessage, setFundMessage] = useState("");
+  const [nodeBalance, setNodeBalance] = useState(0);
+
+  const [bundlr,setBundlr] = useState()
   const [file, setFile] = useState(null)
   const [status, setStatus] = useState('')
   const [videos,setVideos] = useState([])
   const [videoMap,setVideoMap] =useState(new Map())
   const [{ storedDAGShards }, uploader] = ax.useUploader()
   const videoFilesRef = useRef("")
+  const arweaveFilesRef = useRef("")
+
   const [refreshData,setRefreshData] = useState(new Date())
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
@@ -64,7 +75,8 @@ export default function Channel() {
                 downloaded,
                 thumbnails,
                 description,
-                ipfsCID
+                ipfsCID,
+                arweaveID
               }
             }
           }
@@ -78,7 +90,7 @@ export default function Channel() {
           console.log(thumbnail.default.url)
           if(item.node.channel == router.query.channelId) 
           {
-            let _data = {id:item.node.id,videoId:item.node.videoId,ipfsCID:item.node.ipfsCID,dowloaded:item.node.downloaded,channel:item.node.channel,title:item.node.title,thumbnail:(thumbnail.maxres?.url ? thumbnail.maxres?.url : thumbnail.default.url)}
+            let _data = {id:item.node.id,videoId:item.node.videoId,ipfsCID:item.node.ipfsCID,arweaveID:item.node.arweaveID,dowloaded:item.node.downloaded,channel:item.node.channel,title:item.node.title,thumbnail:(thumbnail.maxres?.url ? thumbnail.maxres?.url : thumbnail.default.url)}
             _videoMap.set(_data.videoId,_data)
             ch.push(_data)
           }
@@ -95,6 +107,24 @@ export default function Channel() {
       getData()
   },[refreshData])
 
+  useEffect(()=>{
+   async function init(){
+    await window.ethereum.enable();
+   const provider = new providers.Web3Provider(window.ethereum);
+   const _bundlr = new WebBundlr("https://devnet.bundlr.network", "matic", provider, {
+    providerUrl: "https://polygon-mumbai.infura.io/v3/91e44a8b6a134115a89ec7894615e143",
+});await _bundlr.ready();
+
+    setBundlr(_bundlr)
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const account = accounts[0];
+    const curBalance = await _bundlr.getBalance(account);
+    setNodeBalance(
+        _bundlr.utils.unitConverter(curBalance).toFixed(7, 2).toString(),
+    );
+   }
+   init()
+  },[])
   /**
    * On load check if there is a DID-Session in local storage.
    * If there is a DID-Session we can immediately authenticate the user.
@@ -164,7 +194,7 @@ export default function Channel() {
     let description = video.snippet.description;
     let thumbnails=JSON.stringify(video.snippet.thumbnails);
     
-    let vData = {i:{content:{channel:channelId,videoId:videoId,title:title,thumbnails:thumbnails,description:description,downloaded:false,ipfsCID:"NU"}}}
+    let vData = {i:{content:{channel:channelId,videoId:videoId,title:title,thumbnails:thumbnails,description:description,downloaded:false,ipfsCID:"NU",arweaveID:"NU"}}}
     console.log(vData) 
     let map:  Record<"i",any>
     map = vData
@@ -178,6 +208,7 @@ export default function Channel() {
         description
         downloaded
         ipfsCID
+        arweaveID
         }
       }
     }
@@ -204,17 +235,17 @@ export default function Channel() {
   }
 
   const handleClickVideo = (video:any) =>{
-    if(video.ipfsCID=="NU")
+    if(video.ipfsCID=="NU" && video.arweaveID == "NU")
     {
       setNotificationTitle("View Video")
-      setNotificationDescription("Video not uploaded to IPFS.")
+      setNotificationDescription("Video not uploaded to IPFS or Arweave.")
       setDialogType(2) //Error
       setShow(true)
       
     }
     else  
     {
-      router.push({pathname:"/video" ,query:{id:video.id,thumbnail:router.query.thumbnail,channel:router.query.channel,channelTitle:router.query.title,title:video.title,ipfsCID:video.ipfsCID,channelId:router.query.channelId,banner:router.query.banner,videoThumbnail:video.thumbnail}})
+      router.push({pathname:"/video" ,query:{id:video.id,thumbnail:router.query.thumbnail,channel:router.query.channel,channelTitle:router.query.title,title:video.title,ipfsCID:video.ipfsCID,channelId:router.query.channelId,banner:router.query.banner,videoThumbnail:video.thumbnail,arweaveID:video.arweaveID}})
  
     }
       }
@@ -310,13 +341,127 @@ export default function Channel() {
     }
 
   }; 
+
+
+  const arweaveFilesSelected = async () => {
+    console.log(uploader)
+    console.log(space)
+    /*const price = await bundlr.getPrice(arweaveFilesRef.current.files[0].size);
+    alert(price)
+    return*/ 
+    for  (var file =0 ; file <   arweaveFilesRef.current.files.length; file++)
+    {
+       let tx:any;
+       console.log( arweaveFilesRef.current.files[file])
+       setFile(arweaveFilesRef.current.files[file])
+       const  video = videoMap.get(arweaveFilesRef.current.files[file].name.replace(".mp4",""))
+    
+       if(video== undefined)
+       {
+          if(show)
+            setShow(false) 
+          setDialogType(2) //Error
+           setNotificationTitle("File Error.")
+           setNotificationDescription(`File: ${arweaveFilesRef.current.files[file].name} not found in database.`)
+           setShow(true)
+           continue     
+       }
+
+       if(video.arweaveID != "NU")
+       {
+
+        setDialogType(2) //Error
+           setNotificationTitle("File Error.")
+           setNotificationDescription(`File: ${arweaveFilesRef.current.files[file].name} already uploaded to arweave.`)
+           setShow(true)
+           
+
+        continue
+       }
+
+       try{
+            setStatus('uploading')
+            setDialogType(1) //Success
+            setNotificationTitle("Uploading File.")
+            setNotificationDescription(`File: ${arweaveFilesRef.current.files[file].name}`)
+            setShow(true)
+            
+            const dataStream = fileReaderStream(arweaveFilesRef.current.files[file]);
+            
+            tx = await bundlr.upload(dataStream, {
+    tags: [{ name: "Content-Type", value: "video/mp4" }],
+});
+       }catch(err)
+       {
+          console.log(err)
+          setNotificationTitle("Update Video")
+          setNotificationDescription(err.message)
+          setDialogType(2) //Error
+          setShow(true)
+
+          return
+       }finally {
+        setStatus('done')
+      }
+       //console.log(cid.toString())
+       
+       console.log(arweaveFilesRef.current.files[file].name.replace(".mp4",""))
+       const d = {i:{id:video.id,content:{arweaveID:tx.id,downloaded:true}}}
+       let map:  Record<"i",any>
+       map = d
+       const save = await composeClient.executeQuery(`mutation updateYoutubeVideoInformation($i: UpdateYoutubeVideoInformationInput!) {
+         updateYoutubeVideoInformation(input: $i) {
+           document {
+             arweaveID
+             downloaded
+           }
+         }
+       }
+       
+       `,map)
+       if(save.errors)
+    {
+      setNotificationTitle("Update Video")
+      setNotificationDescription(JSON.stringify(save.errors))
+      setDialogType(2) //Error
+      setShow(true)
+    }else
+    {
+      setNotificationTitle("Update Video")
+      setNotificationDescription("Successfully updated video.")
+      setDialogType(1) //Success
+      setShow(true)
+      setOpen(false)  
+      setRefreshData(new Date())
+    }
+    }
+
+  }
+
   const handleUploadIPFS = (e:any) => {
     videoFilesRef.current.click(); 
   }; 
 
   
+  const handleUploadArweave = (e:any) => {
+    arweaveFilesRef.current.click(); 
+  }; 
 
- 
+  const fundNode = async () => {
+   
+    const fundAmountParsed = new BigNumber(fundAmount).multipliedBy(
+        bundlr.currencyConfig.base[1],
+    );
+    await bundlr
+        .fund(fundAmountParsed.toString())
+        .then((res) => {
+            setFundMessage("Wallet Funded");
+        })
+        .catch((e) => {
+            console.log(e);
+            setFundMessage("Error While Funding ", e.message);
+        });
+};
 
     return(      <div className="min-h-full">
     <Header/>
@@ -355,7 +500,18 @@ export default function Channel() {
                 <input type="file"   accept="video/mp4" multiple    ref={videoFilesRef} hidden={true} onChange={videoFilesSelected}/>
 
               </button>
+              <button
+                type="button"
+                className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-1 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+               onClick={handleUploadArweave}
+             >
+                <ArrowUpCircleIcon className="-ml-1 mr-2 h-5 w-5 text-white" aria-hidden="true" />
+                <span>Upload to Arweave</span>
+                <input type="file"   accept="video/mp4" multiple    ref={arweaveFilesRef} hidden={true} onChange={arweaveFilesSelected}/>
+
+              </button>
             </div>
+          
           </div>
         </div>
         <div className="mt-6 hidden min-w-0 flex-1 sm:block md:hidden">
@@ -363,6 +519,32 @@ export default function Channel() {
         </div>
       </div>
     </div>
+    <div className="px-4 py-5 flex flex-col" id="fund_container">
+            <label
+                className="pr-5block mb-2 text-sm font-medium text-text"
+                for="file_input"
+            >
+                Fund Arweave Node
+            </label>
+            <div className="flex flex-row">
+                <input
+                    className="rounded w-20 pl-3 focus:outline-none text-black"
+                    type="number"
+                    value={fundAmount}
+                    onChange={(e) => setFundAmount(e.target.value)}
+                />
+                <button
+                     className="ml-2 inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-1 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+               
+                    onClick={fundNode}
+                >
+                    Fund
+                </button>
+            </div>
+            <p className="text-messageText text-sm">{fundMessage}</p>
+            <p className="mt-2 text-messageText text-sm">Balance: {nodeBalance} Matic</p>
+
+        </div>
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
@@ -384,12 +566,19 @@ export default function Channel() {
           </div>
           <p className="pointer-events-none mt-2 block  text-sm font-medium text-gray-900">{video.title}</p>
           {video.ipfsCID == "NU" ? <span className="inline-flex rounded-full bg-red-500 px-2 text-xs font-semibold leading-5 text-white">
-                          Not Uploaded to IPFS
+                          IPFS
                         </span> : 
                         <span className="inline-flex rounded-full bg-green-500 px-2 text-xs font-semibold leading-5 text-white">
-                        Uploaded to IPFS
+                         IPFS
                       </span>
                         }
+         {video.arweaveID == "NU" ? <span className="ml-2 inline-flex rounded-full bg-red-500 px-2 text-xs font-semibold leading-5 text-white">
+                          Arweave
+                        </span> : 
+                        <span className="ml-2 inline-flex rounded-full bg-green-500 px-2 text-xs font-semibold leading-5 text-white">
+                        Arweave
+                      </span>
+                        }                
         </li>
       ))}
     </ul>

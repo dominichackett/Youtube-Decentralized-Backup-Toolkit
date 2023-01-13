@@ -123,6 +123,14 @@ export default function LandingPage() {
               <Image alt ="Ceramic" src="/ceramic.png" height={64} width={160}/>
               
             </div>
+            <div className="col-span-1 flex justify-center bg-gray-50 py-8 px-8">
+            <Image src="/bundlr.png" height={64} width={160}/>
+
+            </div>
+            <div className="col-span-1 flex justify-center bg-gray-50 py-8 px-8">
+              <Image src="/arweave.png" height={64} width={160}/>
+              
+            </div>
           </div>
         </div>
       </div>

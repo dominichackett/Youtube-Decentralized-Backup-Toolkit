@@ -11,15 +11,38 @@ import { ethers } from "ethers"
 
  
 import {useRouter} from 'next/router'
+declare global {
+  interface Window {
+    aptos: any;
+  }
+}
+import { Types ,AptosClient} from 'aptos';
+import {
+  CreateAptosTokenBody,
+  CreateAptosTokenResponse,
+} from './api/aptosnft';
+
+import { GetImageBody,ImageResponse } from './api/getimage';
+
+const NODE_URL = 'https://fullnode.devnet.aptoslabs.com';
+
+const aptosClient  = new AptosClient(NODE_URL);
+
 export default function Videos() {
+
+
+  const [address, setAddress] = useState<string | null>(null);
     const [videoKey,setVideoKey] = useState(new Date().getTime())
     const router = useRouter()
     const ffmpeg = createFFmpeg({   corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js"
     ,log: true });
 
+    const [imageData,setImageData] = useState()
     const [fileData,setFileData] = useState()
     const [clipData,setCLipData] = useState()
    const [src,setSrc]  = useState()
+   const [imageURL,setImageURL]  = useState()
+
    const [videoUrl,setVideoUrl] = useState()
    const [nftstorage] = useState(
     new NFTStorage({ token: process.env.NEXT_PUBLIC_NFT_STORAGE_KEY })
@@ -107,6 +130,102 @@ const handleViewFullVideo = () => {
     setVideoKey(new Date().getTime())
 }
 
+
+const mintAPTOSNFT = async ()=>{
+  try {
+         await window.aptos.connect();
+      const account: { address: string } = await window.aptos.account();
+
+      setAddress(account.address);
+    
+  } catch (e) {
+   
+    setDialogType(2) //Error
+   setNotificationTitle("Mint APTOS NFT")
+   setNotificationDescription(e.message)
+   setShow(true)
+   return
+  }
+
+  if(!clipData)
+  {
+     setDialogType(2) //Error
+     setNotificationTitle("Clip Video")
+     setNotificationDescription("No file data found.")
+     setShow(true)
+     return
+  }
+
+
+
+  const metadata = await nftstorage.store({
+    name: router.query.title,
+     description: `${router.query.channelTitle} - ${router.query.title}`,
+    image: new File([clipData], 'video.mp4', { type: 'application/mp4' })
+    
+  })
+  try {
+      const body: CreateAptosTokenBody = {
+        receiver: address,
+        metadataUri: metadata.url,
+      };
+
+      const response = await fetch('/api/aptosnft', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      
+
+      const json = (await response.json()) as CreateAptosTokenResponse
+
+      if ((json as CreateAptosTokenResponse).tokenName) {
+        const createResponse = json as CreateAptosTokenResponse;
+
+        const transaction = {
+          type: 'entry_function_payload',
+          function: '0x3::token_transfers::claim_script',
+          arguments: [
+            createResponse.creator,
+            createResponse.creator,
+            createResponse.collectionName,
+            createResponse.tokenName,
+            createResponse.tokenPropertyVersion,
+          ],
+          type_arguments: [],
+        };
+
+        const aptosResponse: Types.PendingTransaction =
+          await window.aptos.signAndSubmitTransaction(transaction);
+
+        const result = await aptosClient.waitForTransactionWithResult(
+          aptosResponse.hash,
+          { checkSuccess: true },
+        );
+
+        //setCreationHash(result.hash);
+        setDialogType(1) //Success
+        setNotificationTitle("Mint APTOS NFT")
+        setNotificationDescription("Successfully Minted NFT")
+        setShow(true)
+        return
+      }
+    
+  } catch (e) {
+    setDialogType(2) //Error
+    setNotificationTitle("Mint APTOS NFT")
+    setNotificationDescription(e.message)
+    setShow(true)
+    return
+
+  }
+  
+}
+
+
 const mintNFT = async ()=>{
     if(!clipData)
 {
@@ -155,6 +274,8 @@ const metadata = await nftstorage.store({
 
 }
 
+
+
  useEffect(()=>{
  
   console.log(`https://${router.query.ipfsCID}.ipfs.w3s.link`)
@@ -177,6 +298,9 @@ const metadata = await nftstorage.store({
     }
  },[router.query.ipfsCID])
 
+
+
+
 function toTime(value)
 {
    if(isNaN(value))
@@ -193,12 +317,12 @@ function toTime(value)
 }
     return(      <div className="min-h-full">
     <Header/>
+    <a href={imageURL}> Download</a>
     <div className="py-4">
     <header className='grid justify-items-center' >
       <div className="content-center mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Mint NFT</h1>
       </div>
-     
     </header>
     <main>
         
@@ -245,6 +369,13 @@ function toTime(value)
                 className="ml-2 inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-1 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 >
                 <span>Mint NFT</span>
+              </button>
+              <button
+               onClick={mintAPTOSNFT}
+                type="button"
+                className="ml-2 inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-1 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
+                <span>Mint APTOS NFT</span>
               </button>
               <div  className='mt-2 grid grid-rows-2 gap-2 gap-y-1'>
              

@@ -11,7 +11,9 @@ const user = {
 }
 const navigation = [
   { name: 'Channels', href: '/channels', current: true },
-  { name: 'Videos', href: '/videos', current: false },
+  { name: 'IPFS Videos', href: '/videos', current: false },
+  { name: 'Arweave Videos', href: '/arweave', current: false },
+
   { name: 'Configuration', href: '/config', current: false },
   { name: 'About', href: '/about', current: false },
 ]

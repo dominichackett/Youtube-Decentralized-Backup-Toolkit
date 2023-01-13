@@ -9,6 +9,7 @@ type YoutubeVideoInformation @createModel(accountRelation:LIST, description:  "Y
   description: String! @string(maxLength: 5000) 
   downloaded:   Boolean!
   ipfsCID: String! @string(maxLength: 59)
+  arweaveID: String! @string(maxLength: 59)
 }
 
 

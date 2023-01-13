@@ -57,13 +57,11 @@ export default function Videos() {
       <div className="mt-2 mb-4 mx-auto max-w-3xl  sm:px-4 lg:px-6">
         <Player
       title="Waterfalls"
-src={`https://${router.query.ipfsCID}.ipfs.w3s.link`}
-autoUrlUpload={{ fallback: true, ipfsGateway: 'https://w3s.link' }}
+src={ router.query.ipfsCID != "NU" && router.query.ipfs == true  ? `https://${router.query.ipfsCID}.ipfs.w3s.link` : `ar://${router.query.arweaveID}`}
 
       className="w-96"
       
-      loop
-      autoPlay
+        autoPlay
       showTitle={false}
       muted
       poster={<PosterImage banner={router.query.videoThumbnail} />}

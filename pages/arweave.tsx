@@ -52,7 +52,8 @@ export default function Videos() {
                 downloaded,
                 thumbnails,
                 description,
-                ipfsCID
+                ipfsCID,
+                arweaveID
               }
             }
           }
@@ -63,9 +64,9 @@ export default function Videos() {
         _videos.data.youtubeVideoInformationIndex.edges.forEach((item:any)=>{
           let thumbnail:any = JSON.parse(item.node.thumbnails)
           console.log(thumbnail.default.url)
-          if((item.node.channel == selectedChannel  && item.node.ipfsCID !="NU")|| (selectedChannel == "all" && item.node.ipfsCID !="NU")) 
+          if((item.node.channel == selectedChannel  && item.node.arweaveID !="NU")|| (selectedChannel == "all" && item.node.arweaveID !="NU")) 
           {
-            let _data = {id:item.node.id,videoId:item.node.videoId,ipfsCID:item.node.ipfsCID,dowloaded:item.node.downloaded,channel:item.node.channel,title:item.node.title,thumbnail:(thumbnail.maxres?.url ? thumbnail.maxres?.url : thumbnail.default.url)}
+            let _data = {id:item.node.id,videoId:item.node.videoId,ipfsCID:item.node.ipfsCID,arweaveID:item.node.arweaveID,dowloaded:item.node.downloaded,channel:item.node.channel,title:item.node.title,thumbnail:(thumbnail.maxres?.url ? thumbnail.maxres?.url : thumbnail.default.url)}
             ch.push(_data)
           }
         })
@@ -155,7 +156,7 @@ export default function Videos() {
 
  const handleClickVideo = (video:any,channel:any) =>{
 
-    router.push({pathname:"/video" ,query:{id:video.id,thumbnail:channel.thumbnail,channel:channel.id,channelTitle:channel.title,title:video.title,ipfsCID:video.ipfsCID,channelId:video.channel,banner:channel.banner,videoThumbnail:video.thumbnail,ipfs:true}})
+    router.push({pathname:"/video" ,query:{id:video.id,thumbnail:channel.thumbnail,channel:channel.id,channelTitle:channel.title,title:video.title,ipfsCID:video.ipfsCID,arweaveID:video.arweaveID,channelId:video.channel,banner:channel.banner,videoThumbnail:video.thumbnail,ipfs:false}})
 
   }
     
@@ -165,7 +166,7 @@ export default function Videos() {
     <div className="py-10">
     <header>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">IPFS Videos</h1>
+        <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Arweave Videos</h1>
       </div>
       <div className="mt-2 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
